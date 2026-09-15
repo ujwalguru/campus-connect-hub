@@ -468,7 +468,7 @@ function AdminDashboard() {
                           <p className="mt-2 text-[11px] text-muted-foreground">{a.date}</p>
                         </div>
                         <button
-                          onClick={() => setAnnouncements((p) => p.filter((x) => x.id !== a.id))}
+                          onClick={() => removeAnnouncement(a.id)}
                           className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent"
                           aria-label="Delete announcement"
                         >
