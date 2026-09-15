@@ -67,6 +67,7 @@ function StudentPortal() {
   const [tracked, setTracked] = useState<Complaint | null>(null);
   const [faqOpen, setFaqOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const { announcements } = useAnnouncements();
 
   const stats = useMemo(
     () => [
