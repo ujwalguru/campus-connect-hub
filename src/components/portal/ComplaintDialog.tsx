@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Paperclip } from "lucide-react";
+import { FileText, Paperclip, X } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -22,16 +23,31 @@ import {
 } from "@/components/ui/select";
 import { categories } from "./data";
 
+export type Attachment = {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  url: string;
+};
+
 export type NewComplaint = {
   subject: string;
   category: string;
   urgency: string;
   description: string;
   anonymous: boolean;
-  fileName?: string | undefined;
+  attachments: Attachment[];
 };
 
 const urgencies = ["Low", "Medium", "High", "Critical"];
+const MAX_SIZE = 25 * 1024 * 1024;
+
+function prettySize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 export function ComplaintDialog({
   open,
@@ -49,22 +65,63 @@ export function ComplaintDialog({
   const [urgency, setUrgency] = useState("Medium");
   const [description, setDescription] = useState("");
   const [anonymous, setAnonymous] = useState(false);
-  const [fileName, setFileName] = useState<string | undefined>();
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [touched, setTouched] = useState(false);
 
   useEffect(() => {
     if (open) setCategory(presetCategory ?? "");
   }, [open, presetCategory]);
 
-  const valid = subject.trim().length > 2 && category && description.trim().length > 5;
+  const errors = {
+    subject: subject.trim().length < 3 ? "Please write a short title (3+ characters)." : "",
+    category: !category ? "Please choose a category." : "",
+    description:
+      description.trim().length < 6 ? "Please describe the issue (6+ characters)." : "",
+  };
+  const valid = !errors.subject && !errors.category && !errors.description;
+
+  function addFiles(list: FileList | null) {
+    if (!list) return;
+    const next: Attachment[] = [];
+    for (const file of Array.from(list)) {
+      if (file.size > MAX_SIZE) {
+        toast.error(`${file.name} is larger than 25 MB`);
+        continue;
+      }
+      next.push({
+        id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        url: URL.createObjectURL(file),
+      });
+    }
+    if (next.length) setAttachments((prev) => [...prev, ...next]);
+  }
+
+  function removeFile(id: string) {
+    setAttachments((prev) => {
+      const target = prev.find((a) => a.id === id);
+      if (target) URL.revokeObjectURL(target.url);
+      return prev.filter((a) => a.id !== id);
+    });
+  }
 
   function handleSubmit() {
-    if (!valid) return;
-    onSubmit({ subject, category, urgency, description, anonymous, fileName });
+    setTouched(true);
+    if (!valid) {
+      toast.error("Please complete the required fields", {
+        description: errors.subject || errors.category || errors.description,
+      });
+      return;
+    }
+    onSubmit({ subject, category, urgency, description, anonymous, attachments });
     setSubject("");
     setDescription("");
     setUrgency("Medium");
     setAnonymous(false);
-    setFileName(undefined);
+    setAttachments([]);
+    setTouched(false);
     onOpenChange(false);
   }
 
@@ -87,6 +144,9 @@ export function ComplaintDialog({
               onChange={(e) => setSubject(e.target.value)}
               placeholder="e.g. Water cooler not working in Block B"
             />
+            {touched && errors.subject && (
+              <p className="text-xs font-medium text-destructive">{errors.subject}</p>
+            )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -104,6 +164,9 @@ export function ComplaintDialog({
                   ))}
                 </SelectContent>
               </Select>
+              {touched && errors.category && (
+                <p className="text-xs font-medium text-destructive">{errors.category}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Urgency</Label>
@@ -131,23 +194,83 @@ export function ComplaintDialog({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe what happened, where and when..."
             />
+            {touched && errors.description && (
+              <p className="text-xs font-medium text-destructive">{errors.description}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="attachment">Attachment</Label>
+            <Label htmlFor="attachment">Attachments</Label>
             <label
               htmlFor="attachment"
               className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-input bg-muted/50 px-4 py-3 text-sm text-muted-foreground hover:border-primary/50"
             >
               <Paperclip className="size-4" />
-              {fileName ?? "Attach a photo or document (optional)"}
+              Add photos, videos, audio or PDFs (optional, up to 25 MB each)
             </label>
             <input
               id="attachment"
               type="file"
+              multiple
+              accept="image/*,video/*,audio/*,application/pdf,.doc,.docx"
               className="hidden"
-              onChange={(e) => setFileName(e.target.files?.[0]?.name)}
+              onChange={(e) => {
+                addFiles(e.target.files);
+                e.target.value = "";
+              }}
             />
+
+            {attachments.length > 0 && (
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {attachments.map((a) => (
+                  <li
+                    key={a.id}
+                    className="relative overflow-hidden rounded-xl border border-border bg-muted/40 p-2"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => removeFile(a.id)}
+                      aria-label={`Remove ${a.name}`}
+                      className="absolute right-2 top-2 z-10 flex size-6 items-center justify-center rounded-full bg-background/90 text-foreground shadow hover:bg-accent"
+                    >
+                      <X className="size-3.5" />
+                    </button>
+
+                    {a.type.startsWith("image/") && (
+                      <img
+                        src={a.url}
+                        alt={a.name}
+                        className="h-32 w-full rounded-lg object-cover"
+                      />
+                    )}
+                    {a.type.startsWith("video/") && (
+                      <video src={a.url} controls className="h-32 w-full rounded-lg bg-black" />
+                    )}
+                    {a.type.startsWith("audio/") && (
+                      <audio src={a.url} controls className="mt-6 w-full" />
+                    )}
+                    {a.type === "application/pdf" && (
+                      <embed
+                        src={a.url}
+                        type="application/pdf"
+                        className="h-32 w-full rounded-lg bg-background"
+                      />
+                    )}
+                    {!a.type.startsWith("image/") &&
+                      !a.type.startsWith("video/") &&
+                      !a.type.startsWith("audio/") &&
+                      a.type !== "application/pdf" && (
+                        <div className="flex h-32 items-center justify-center rounded-lg bg-background">
+                          <FileText className="size-8 text-muted-foreground" />
+                        </div>
+                      )}
+
+                    <p className="mt-2 truncate text-xs font-semibold">{a.name}</p>
+                    <p className="text-[11px] text-muted-foreground">{prettySize(a.size)}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3">
@@ -165,9 +288,7 @@ export function ComplaintDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!valid}>
-            Submit complaint
-          </Button>
+          <Button onClick={handleSubmit}>Submit complaint</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
