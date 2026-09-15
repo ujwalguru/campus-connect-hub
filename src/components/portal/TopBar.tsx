@@ -1,6 +1,14 @@
-import { Bell, Search, ChevronDown } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Bell, Search, ChevronDown, User, Settings, LogOut, HelpCircle } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { notifications } from "./data";
 import { useProfile } from "./profile";
 
@@ -12,6 +20,7 @@ export function TopBar({
   onQueryChange: (v: string) => void;
 }) {
   const { profile } = useProfile();
+  const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-border bg-background/85 px-4 py-3 backdrop-blur md:px-8">
       <label className="relative flex h-11 flex-1 items-center rounded-xl border border-border bg-card px-4 md:max-w-xl">
@@ -46,19 +55,44 @@ export function TopBar({
           </PopoverContent>
         </Popover>
 
-        <Link
-          to="/profile"
-          className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2 transition-colors hover:bg-accent"
-        >
-          <span className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
-            {profile.initials}
-          </span>
-          <span className="hidden leading-tight sm:block">
-            <span className="block text-sm font-bold text-foreground">{profile.name}</span>
-            <span className="block text-xs text-muted-foreground">{profile.course}</span>
-          </span>
-          <ChevronDown className="size-4 text-muted-foreground" />
-        </Link>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2 transition-colors outline-none hover:bg-accent data-[state=open]:bg-accent">
+            <span className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
+              {profile.initials}
+            </span>
+            <span className="hidden text-left leading-tight sm:block">
+              <span className="block text-sm font-bold text-foreground">{profile.name}</span>
+              <span className="block text-xs text-muted-foreground">{profile.course}</span>
+            </span>
+            <ChevronDown className="size-4 text-muted-foreground transition-transform data-[state=open]:rotate-180" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-bold leading-none">{profile.name}</p>
+                <p className="text-xs leading-none text-muted-foreground">{profile.email}</p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate({ to: "/profile" })}>
+              <User className="mr-2 size-4" />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>
+              <Settings className="mr-2 size-4" />
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate({ to: "/student" })}>
+              <HelpCircle className="mr-2 size-4" />
+              Help & Support
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate({ to: "/" })} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+              <LogOut className="mr-2 size-4" />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
