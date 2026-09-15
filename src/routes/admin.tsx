@@ -449,15 +449,7 @@ function AdminDashboard() {
                   <button
                     onClick={() => {
                       if (!annTitle.trim()) return;
-                      setAnnouncements((p) => [
-                        {
-                          id: Date.now(),
-                          title: annTitle.trim(),
-                          body: annBody.trim(),
-                          date: "Today",
-                        },
-                        ...p,
-                      ]);
+                      publishAnnouncement(annTitle.trim(), annBody.trim());
                       setAnnTitle("");
                       setAnnBody("");
                     }}
