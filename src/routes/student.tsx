@@ -293,6 +293,29 @@ function StudentPortal() {
               </div>
             </section>
 
+            {/* Announcements from administration */}
+            <section className="rounded-3xl border border-border bg-card p-6">
+              <div className="flex items-center gap-2">
+                <Megaphone className="size-5 text-primary" />
+                <h2 className="font-display text-lg font-extrabold">Announcements</h2>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">Updates posted by the administration.</p>
+              <ul className="mt-4 space-y-3">
+                {announcements.map((a) => (
+                  <li key={a.id} className="rounded-2xl border border-border bg-muted/40 p-4">
+                    <p className="text-sm font-bold">{a.title}</p>
+                    {a.body && <p className="mt-1 text-sm text-muted-foreground">{a.body}</p>}
+                    <p className="mt-2 text-[11px] font-semibold text-muted-foreground">{a.date}</p>
+                  </li>
+                ))}
+                {announcements.length === 0 && (
+                  <li className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+                    No announcements right now.
+                  </li>
+                )}
+              </ul>
+            </section>
+
             <section className="rounded-3xl border border-border bg-card p-6">
               <div className="flex items-center gap-2">
                 <Zap className="size-5 text-primary" />
