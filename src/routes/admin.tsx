@@ -30,12 +30,12 @@ import {
   activityFeed,
   adminComplaints,
   departments,
-  initialAnnouncements,
   statusOrder,
   urgencyStyles,
   weeklyTrend,
   type AdminComplaint,
 } from "@/components/portal/adminData";
+import { useAnnouncements } from "@/components/portal/announcements";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
