@@ -78,7 +78,8 @@ function AdminDashboard() {
   const [selected, setSelected] = useState<string[]>([]);
   const [open, setOpen] = useState<AdminComplaint | null>(null);
   const [note, setNote] = useState("");
-  const [announcements, setAnnouncements] = useState(initialAnnouncements);
+  const { announcements, publish: publishAnnouncement, remove: removeAnnouncement } =
+    useAnnouncements();
   const [annTitle, setAnnTitle] = useState("");
   const [annBody, setAnnBody] = useState("");
 
