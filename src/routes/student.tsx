@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
   ChevronRight,
@@ -69,6 +69,7 @@ function StudentPortal() {
   const [faqOpen, setFaqOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const { announcements } = useAnnouncements();
+  const navigate = useNavigate();
 
   const stats = useMemo(
     () => [
@@ -113,6 +114,8 @@ function StudentPortal() {
     if (label === "Knowledge Base") setFaqOpen(true);
     if (label === "Track Status") setTracked(complaints[0] ?? null);
     if (label === "My Complaints") setShowAll(true);
+    if (label === "Profile") navigate({ to: "/profile" });
+    if (label === "Settings") navigate({ to: "/settings" });
   }
 
   function addComplaint(data: NewComplaint) {
