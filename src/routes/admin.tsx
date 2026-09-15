@@ -30,12 +30,12 @@ import {
   activityFeed,
   adminComplaints,
   departments,
-  initialAnnouncements,
   statusOrder,
   urgencyStyles,
   weeklyTrend,
   type AdminComplaint,
 } from "@/components/portal/adminData";
+import { useAnnouncements } from "@/components/portal/announcements";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -78,7 +78,8 @@ function AdminDashboard() {
   const [selected, setSelected] = useState<string[]>([]);
   const [open, setOpen] = useState<AdminComplaint | null>(null);
   const [note, setNote] = useState("");
-  const [announcements, setAnnouncements] = useState(initialAnnouncements);
+  const { announcements, publish: publishAnnouncement, remove: removeAnnouncement } =
+    useAnnouncements();
   const [annTitle, setAnnTitle] = useState("");
   const [annBody, setAnnBody] = useState("");
 
@@ -448,15 +449,7 @@ function AdminDashboard() {
                   <button
                     onClick={() => {
                       if (!annTitle.trim()) return;
-                      setAnnouncements((p) => [
-                        {
-                          id: Date.now(),
-                          title: annTitle.trim(),
-                          body: annBody.trim(),
-                          date: "Today",
-                        },
-                        ...p,
-                      ]);
+                      publishAnnouncement(annTitle.trim(), annBody.trim());
                       setAnnTitle("");
                       setAnnBody("");
                     }}
@@ -475,7 +468,7 @@ function AdminDashboard() {
                           <p className="mt-2 text-[11px] text-muted-foreground">{a.date}</p>
                         </div>
                         <button
-                          onClick={() => setAnnouncements((p) => p.filter((x) => x.id !== a.id))}
+                          onClick={() => removeAnnouncement(a.id)}
                           className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent"
                           aria-label="Delete announcement"
                         >
