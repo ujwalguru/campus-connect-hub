@@ -1,4 +1,16 @@
-import { Bell, Search, ChevronDown, User, Settings, LogOut, HelpCircle } from "lucide-react";
+import {
+  Bell,
+  Search,
+  ChevronDown,
+  User,
+  Settings,
+  LogOut,
+  HelpCircle,
+  Sun,
+  Moon,
+  Globe,
+  Check,
+} from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -11,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { notifications } from "./data";
 import { useProfile } from "./profile";
+import { languages, useLanguage, useTheme } from "./prefs";
 
 export function TopBar({
   query,
