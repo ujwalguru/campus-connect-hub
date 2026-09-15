@@ -14,6 +14,7 @@ import {
   FileEdit,
   Sun,
   FolderOpen,
+  Megaphone,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
