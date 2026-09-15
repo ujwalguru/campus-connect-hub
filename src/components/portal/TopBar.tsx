@@ -87,7 +87,7 @@ export function TopBar({
               Help & Support
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate({ to: "/auth" })} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+            <DropdownMenuItem onClick={() => navigate({ to: "/" })} className="text-destructive focus:text-destructive focus:bg-destructive/10">
               <LogOut className="mr-2 size-4" />
               Log out
             </DropdownMenuItem>
