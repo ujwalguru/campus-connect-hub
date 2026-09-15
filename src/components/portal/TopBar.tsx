@@ -1,6 +1,8 @@
 import { Bell, Search, ChevronDown } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { notifications } from "./data";
+import { useProfile } from "./profile";
 
 export function TopBar({
   query,
@@ -9,6 +11,7 @@ export function TopBar({
   query: string;
   onQueryChange: (v: string) => void;
 }) {
+  const { profile } = useProfile();
   return (
     <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-border bg-background/85 px-4 py-3 backdrop-blur md:px-8">
       <label className="relative flex h-11 flex-1 items-center rounded-xl border border-border bg-card px-4 md:max-w-xl">
@@ -43,16 +46,19 @@ export function TopBar({
           </PopoverContent>
         </Popover>
 
-        <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2">
+        <Link
+          to="/profile"
+          className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2 transition-colors hover:bg-accent"
+        >
           <span className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
-            RS
+            {profile.initials}
           </span>
           <span className="hidden leading-tight sm:block">
-            <span className="block text-sm font-bold text-foreground">Rahul Sharma</span>
-            <span className="block text-xs text-muted-foreground">B.Tech - Computer Science</span>
+            <span className="block text-sm font-bold text-foreground">{profile.name}</span>
+            <span className="block text-xs text-muted-foreground">{profile.course}</span>
           </span>
           <ChevronDown className="size-4 text-muted-foreground" />
-        </div>
+        </Link>
       </div>
     </header>
   );
