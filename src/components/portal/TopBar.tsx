@@ -1,5 +1,5 @@
 import { Bell, Search, ChevronDown, User, Settings, LogOut, HelpCircle } from "lucide-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   DropdownMenu,
