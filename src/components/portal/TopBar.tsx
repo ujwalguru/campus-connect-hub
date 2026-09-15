@@ -55,19 +55,44 @@ export function TopBar({
           </PopoverContent>
         </Popover>
 
-        <Link
-          to="/profile"
-          className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2 transition-colors hover:bg-accent"
-        >
-          <span className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
-            {profile.initials}
-          </span>
-          <span className="hidden leading-tight sm:block">
-            <span className="block text-sm font-bold text-foreground">{profile.name}</span>
-            <span className="block text-xs text-muted-foreground">{profile.course}</span>
-          </span>
-          <ChevronDown className="size-4 text-muted-foreground" />
-        </Link>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2 transition-colors outline-none hover:bg-accent data-[state=open]:bg-accent">
+            <span className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
+              {profile.initials}
+            </span>
+            <span className="hidden text-left leading-tight sm:block">
+              <span className="block text-sm font-bold text-foreground">{profile.name}</span>
+              <span className="block text-xs text-muted-foreground">{profile.course}</span>
+            </span>
+            <ChevronDown className="size-4 text-muted-foreground transition-transform data-[state=open]:rotate-180" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-bold leading-none">{profile.name}</p>
+                <p className="text-xs leading-none text-muted-foreground">{profile.email}</p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate({ to: "/profile" })}>
+              <User className="mr-2 size-4" />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>
+              <Settings className="mr-2 size-4" />
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate({ to: "/student" })}>
+              <HelpCircle className="mr-2 size-4" />
+              Help & Support
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate({ to: "/auth" })} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+              <LogOut className="mr-2 size-4" />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
