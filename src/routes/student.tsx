@@ -36,6 +36,7 @@ import {
   statusStyles,
   type Complaint,
 } from "@/components/portal/data";
+import { useAnnouncements } from "@/components/portal/announcements";
 import campusImage from "@/assets/campus.jpg";
 
 export const Route = createFileRoute("/student")({
