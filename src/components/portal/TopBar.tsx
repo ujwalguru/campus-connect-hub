@@ -1,4 +1,16 @@
-import { Bell, Search, ChevronDown, User, Settings, LogOut, HelpCircle } from "lucide-react";
+import {
+  Bell,
+  Search,
+  ChevronDown,
+  User,
+  Settings,
+  LogOut,
+  HelpCircle,
+  Sun,
+  Moon,
+  Globe,
+  Check,
+} from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -11,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { notifications } from "./data";
 import { useProfile } from "./profile";
+import { languages, useLanguage, useTheme } from "./prefs";
 
 export function TopBar({
   query,
@@ -20,6 +33,8 @@ export function TopBar({
   onQueryChange: (v: string) => void;
 }) {
   const { profile } = useProfile();
+  const { theme, toggle } = useTheme();
+  const { lang, current, change } = useLanguage();
   const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-border bg-background/85 px-4 py-3 backdrop-blur md:px-8">
@@ -37,6 +52,38 @@ export function TopBar({
       </label>
 
       <div className="ml-auto flex items-center gap-3">
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          className="flex size-10 items-center justify-center rounded-xl border border-border bg-card text-foreground transition-colors hover:bg-accent"
+        >
+          {theme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
+        </button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            aria-label="Change language"
+            className="flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-3 text-foreground outline-none transition-colors hover:bg-accent data-[state=open]:bg-accent"
+          >
+            <Globe className="size-[18px]" />
+            <span className="hidden text-sm font-semibold uppercase sm:block">{current.code}</span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel>Language</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {languages.map((l) => (
+              <DropdownMenuItem key={l.code} onClick={() => change(l.code)}>
+                <span className="flex-1">
+                  {l.native}
+                  <span className="ml-2 text-xs text-muted-foreground">{l.label}</span>
+                </span>
+                {lang === l.code && <Check className="size-4 text-primary" />}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <Popover>
           <PopoverTrigger className="relative flex size-10 items-center justify-center rounded-xl border border-border bg-card text-foreground transition-colors hover:bg-accent">
             <Bell className="size-[18px]" />
