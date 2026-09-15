@@ -20,6 +20,7 @@ export function TopBar({
   onQueryChange: (v: string) => void;
 }) {
   const { profile } = useProfile();
+  const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-border bg-background/85 px-4 py-3 backdrop-blur md:px-8">
       <label className="relative flex h-11 flex-1 items-center rounded-xl border border-border bg-card px-4 md:max-w-xl">
